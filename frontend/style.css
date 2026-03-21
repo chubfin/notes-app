@@ -1,0 +1,128 @@
+body {
+  font-family: 'Poppins', sans-serif;
+  background: linear-gradient(135deg, #ffe4ec, #fff);
+  margin: 0;
+  padding: 0;
+  text-align: center;
+}
+
+h1 {
+  color: #ff4d88;
+  margin-top: 20px;
+}
+
+.container {
+  background: white;
+  padding: 25px;
+  margin: 30px auto;
+  width: 420px;
+  border-radius: 20px;
+  box-shadow: 0 10px 25px rgba(255, 105, 180, 0.2);
+  
+}
+
+.note {
+  background: #fff0f5;
+  padding: 15px;
+  margin: 10px 0;
+  border-radius: 15px;
+  text-align: left;
+  transition: 0.2s;
+}
+
+.note:hover {
+  transform: scale(1.02);
+}
+
+button {
+  background: #ff69b4;
+  color: white;
+  border: none;
+  padding: 7px 12px;
+  margin: 5px 5px 0 0;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+button:hover {
+  background: #ff1493;
+  transform: scale(1.1);
+  transition: 0.2s;
+}
+
+.btn-edit {
+  background: #ffd6e8;
+  color: #d63384;
+}
+
+.btn-delete {
+  background: #ffe0e0;
+  color: #ff4d4d;
+}
+
+input, textarea {
+  width: 90%;
+  padding: 10px;
+  margin: 10px 0;
+  border-radius: 10px;
+  border: 1px solid #ffc0cb;
+  outline: none;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  border-radius: 15px;
+  overflow: hidden;
+}
+
+th {
+  background: #f8a5c2;
+  color: white;
+  font-size: 18px;
+}
+
+td {
+  background: #fff0f5;
+}
+
+tr:hover td {
+  background: #ffe4ec;
+  transition: 0.2s;
+}
+
+.container {
+  width: 80%;
+  margin: auto;
+}
+
+button {
+  padding: 8px 12px;
+  margin: 4px;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+}
+
+tr:nth-child(even) td {
+  background: #fff0f5;
+}
+
+.empty {
+  text-align: center;
+  padding: 20px;
+  color: #999;
+}
+
+.top-bar {
+  display: flex;
+  justify-content: flex-start; /* kiri */
+  margin-bottom: 20px; /* jarak dari tabel */
+}
+
+.top-bar button {
+  background: #ff6fa5;
+  color: white;
+  font-weight: bold;
+}

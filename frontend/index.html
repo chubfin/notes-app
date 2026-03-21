@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Notes</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<h1>💖 My Notes</h1>
+
+<div class="container">
+  <!-- <button onclick="window.location.href='form.html'">➕ Tambah Note</button> -->
+
+  <div class="top-bar">
+    <button onclick="window.location.href='form.html'">➕ Tambah Note</button>
+  </div>
+
+  <table border="1" width="100%" id="table">
+    <thead>
+      <tr>
+        <th>No</th>
+        <th>Judul</th>
+        <th>Isi</th>
+        <th>Aksi</th>
+      </tr>
+    </thead>
+    <tbody id="list"></tbody>
+  </table>
+</div>
+
+<script>
+
+  
+async function getNotes() {
+  const res = await fetch('http://localhost:3000/notes');
+  const data = await res.json();
+
+  const list = document.getElementById('list');
+  list.innerHTML = '';
+
+    if (data.length === 0) {
+        list.innerHTML = `
+      <tr>
+        <td colspan="4" style="text-align:center;">Belum ada catatan 😢</td>
+      </tr>
+    `;
+    return;
+  }
+
+data.forEach((note, index) => {
+    let isiPendek = note.isi;
+
+    if (isiPendek.length > 80) {
+      isiPendek = isiPendek.substring(0, 80) + "...";
+    }
+
+    list.innerHTML += `
+      <tr>
+        <td>${index + 1}</td>
+        <td>${note.judul}</td>
+        <td>${isiPendek}</td>
+        <td>
+          <button class="btn-edit" onclick="edit(${note.id})">✏️</button>
+          <button class="btn-delete" onclick="hapus(${note.id})">🗑️</button>
+        </td>
+      </tr>
+    `;
+  });
+}
+
+async function hapus(id) {
+  await fetch(`http://localhost:3000/notes/${id}`, {
+    method: 'DELETE'
+  });
+
+  getNotes();
+}
+
+function edit(id) {
+  window.location.href = `form.html?id=${id}`;
+}
+
+getNotes();
+</script>
+
+</body>
+</html>

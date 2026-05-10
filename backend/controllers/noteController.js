@@ -37,7 +37,7 @@ const createNote = async (req, res) => {
   }
 };
 
-// --- UPDATE ---
+// 4. Update
 const updateNote = async (req, res) => {
   const { id } = req.params;
   try {
@@ -54,7 +54,7 @@ const updateNote = async (req, res) => {
   }
 };
 
-// --- DELETE ---
+// 5. Delete
 const deleteNote = async (req, res) => {
   const { id } = req.params;
   try {
@@ -71,7 +71,7 @@ const deleteNote = async (req, res) => {
 
 module.exports = {
   getAllNotes,
-  getNoteById, // Pastikan ini diekspor!
+  getNoteById,
   createNote,
   updateNote,
   deleteNote,

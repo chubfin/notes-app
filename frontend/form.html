@@ -63,7 +63,7 @@ title.innerText = id ? "✏️ Edit Note" : "💖 Tambah Note";
 
 // ✅ ambil data kalau edit
 if (id) {
-  fetch(`http://localhost:3000/notes`)
+  fetch(`https://notes-backend-521926891872.us-central1.run.app/notes`)
     .then(res => res.json())
     .then(data => {
       const note = data.find(n => n.id == id); // 🔥 FIX
@@ -93,13 +93,13 @@ async function save() {
 
   try {
     if (id) {
-      await fetch(`http://localhost:3000/notes/${id}`, {
+      await fetch(`https://notes-backend-521926891872.us-central1.run.app/notes/${id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ judul, isi })
       });
     } else {
-      await fetch(`http://localhost:3000/notes`, {
+      await fetch(`https://notes-backend-521926891872.us-central1.run.app/notes`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ judul, isi })

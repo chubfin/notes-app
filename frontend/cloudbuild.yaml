@@ -4,7 +4,7 @@ steps:
     args:
       - app
       - deploy
-      - app.yaml
+      - frontend/app.yaml
       - --quiet
 
 options:

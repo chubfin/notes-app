@@ -18,7 +18,7 @@ steps:
     args:
       - run
       - deploy
-      - notes-backend
+      - notes-finka
       - --image
       - gcr.io/$PROJECT_ID/notes-backend
       - --region

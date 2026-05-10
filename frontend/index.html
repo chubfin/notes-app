@@ -31,7 +31,7 @@
 <script>
 async function getNotes() {
   try {
-    const res = await fetch('https://notes-backend-521926891872.us-central1.run.app/notes');
+    const res = await fetch('https://notes-finka-521926891872.us-central1.run.app/notes');
     const data = await res.json();
 
     const list = document.getElementById('list');
@@ -74,7 +74,7 @@ async function getNotes() {
 
 async function hapus(id) {
   if (confirm("Serius mau hapus catatan ini?")) {
-    await fetch(`https://notes-backend-521926891872.us-central1.run.app/notes/${id}`, {
+    await fetch(`https://notes-finka-521926891872.us-central1.run.app/notes/${id}`, {
       method: 'DELETE'
     });
     getNotes();

@@ -5,4 +5,7 @@ steps:
       - app
       - deploy
       - app.yaml
-      - '--quiet'
+      - --quiet
+
+options:
+  logging: CLOUD_LOGGING_ONLY

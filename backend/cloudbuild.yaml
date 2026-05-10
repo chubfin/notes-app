@@ -1,15 +1,9 @@
 steps:
   - name: 'gcr.io/cloud-builders/docker'
-    args:
-      - build
-      - '-t'
-      - 'gcr.io/$PROJECT_ID/notes-backend'
-      - '.'
+    args: ['build', '-t', 'gcr.io/$PROJECT_ID/notes-backend', '.']
 
   - name: 'gcr.io/cloud-builders/docker'
-    args:
-      - push
-      - 'gcr.io/$PROJECT_ID/notes-backend'
+    args: ['push', 'gcr.io/$PROJECT_ID/notes-backend']
 
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     entrypoint: gcloud
@@ -17,13 +11,16 @@ steps:
       - run
       - deploy
       - notes-backend
-      - '--image'
-      - 'gcr.io/$PROJECT_ID/notes-backend'
-      - '--region'
+      - --image
+      - gcr.io/$PROJECT_ID/notes-backend
+      - --region
       - us-central1
-      - '--platform'
+      - --platform
       - managed
-      - '--allow-unauthenticated'
+      - --allow-unauthenticated
 
 images:
-  - 'gcr.io/$PROJECT_ID/notes-backend'
+  - gcr.io/$PROJECT_ID/notes-backend
+
+options:
+  logging: CLOUD_LOGGING_ONLY

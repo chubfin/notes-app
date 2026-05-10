@@ -1,122 +1,165 @@
-<style>
-  .container {
-  width: 400px;
-  margin: auto;
-  padding: 20px;
-  background: #fff0f5;
-  border-radius: 20px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-  text-align: center;
-}
-
-input, textarea {
-  width: 90%;
-  padding: 10px;
-  border-radius: 10px;
-  border: 1px solid #ffc0cb;
-  outline: none;
-}
-
-textarea {
-  height: 100px;
-  resize: none;
-}
-
-button {
-  background: #ff6fa5;
-  color: white;
-  padding: 10px 15px;
-  border: none;
-  border-radius: 10px;
-  cursor: pointer;
-}
-
-button:hover {
-  transform: scale(1.05);
-  transition: 0.2s;
-}
-</style>
-
 <!DOCTYPE html>
-<html>
+<html lang="id">
 <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <title>Form Note</title>
+
   <link rel="stylesheet" href="style.css">
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #ffeef5;
+      padding: 30px;
+    }
+
+    #title {
+      text-align: center;
+      color: #ff4f8b;
+    }
+
+    .container {
+      width: 400px;
+      margin: auto;
+      padding: 20px;
+      background: #fff0f5;
+      border-radius: 20px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+
+    input, textarea {
+      width: 90%;
+      padding: 10px;
+      border-radius: 10px;
+      border: 1px solid #ffc0cb;
+      outline: none;
+      font-size: 16px;
+    }
+
+    textarea {
+      height: 100px;
+      resize: none;
+    }
+
+    button {
+      background: #ff6fa5;
+      color: white;
+      padding: 10px 15px;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      margin: 5px;
+      font-size: 15px;
+    }
+
+    button:hover {
+      transform: scale(1.05);
+      transition: 0.2s;
+    }
+  </style>
 </head>
+
 <body>
+
 <h1 id="title"></h1>
 
 <div class="container">
+
   <input id="judul" placeholder="Judul"><br><br>
+
   <textarea id="isi" placeholder="Isi"></textarea><br><br>
 
-  <button onclick="save()">Simpan</button>
+  <button onclick="save()">💾 Simpan</button>
+
+</div>
+
+<div style="text-align:center; margin-top:20px;">
+  <button onclick="window.location.href='index.html'">
+    ⬅️ Kembali
+  </button>
 </div>
 
 <script>
 const urlParams = new URLSearchParams(window.location.search);
 const id = urlParams.get('id');
 
-// ✅ set title setelah id ada
 const title = document.getElementById('title');
-title.innerText = id ? "✏️ Edit Note" : "💖 Tambah Note";
 
-// ✅ ambil data kalau edit
+title.innerText = id
+  ? "✏️ Edit Note"
+  : "💖 Tambah Note";
+
 if (id) {
-  fetch(`https://notes-backend-521926891872.us-central1.run.app/notes`)
+  fetch(`https://notes-finka-521926891872.us-central1.run.app/notes`)
     .then(res => res.json())
     .then(data => {
-      const note = data.find(n => n.id == id); // 🔥 FIX
+
+      const note = data.find(n => n.id == id);
 
       if (note) {
         document.getElementById('judul').value = note.judul;
         document.getElementById('isi').value = note.isi;
       }
+
     });
 }
 
-// ✅ tombol simpan
 async function save() {
+
   const btn = document.querySelector("button");
+
   const judul = document.getElementById('judul').value.trim();
+
   const isi = document.getElementById('isi').value.trim();
 
-  // ✅ VALIDASI
   if (!judul || !isi) {
     alert("⚠️ Judul & isi wajib diisi ya!");
     return;
   }
 
-  // ✅ LOADING
   btn.innerText = "⏳ Menyimpan...";
   btn.disabled = true;
 
   try {
+
     if (id) {
-      await fetch(`https://notes-backend-521926891872.us-central1.run.app/notes/${id}`, {
+
+      await fetch(`https://notes-finka-521926891872.us-central1.run.app/notes/${id}`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json'
+        },
         body: JSON.stringify({ judul, isi })
       });
+
     } else {
-      await fetch(`https://notes-backend-521926891872.us-central1.run.app/notes`, {
+
+      await fetch(`https://notes-finka-521926891872.us-central1.run.app/notes`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json'
+        },
         body: JSON.stringify({ judul, isi })
       });
+
     }
 
     window.location.href = 'index.html';
 
   } catch (err) {
+
     alert("❌ Gagal menyimpan");
-    btn.innerText = "Simpan";
+
+    btn.innerText = "💾 Simpan";
+
     btn.disabled = false;
+
   }
 }
 </script>
-
-<button onclick="window.location.href='index.html'">⬅️ Kembali</button>
 
 </body>
 </html>

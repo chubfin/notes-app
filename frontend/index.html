@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,75 +8,207 @@
 </head>
 <body>
 
-<h1>💖 My Notes</h1>
+<div class="page-shell">
+  <header class="app-header">
+    <div>
+      <p class="eyebrow">Daftar Catatan</p>
+      <h1>My Sweet Notes</h1>
+      <p class="subtitle" id="note-count">0 catatan</p>
+    </div>
 
-<div class="container">
-  <div class="top-bar">
-    <button onclick="window.location.href='form.html'">➕ Tambah Note</button>
-  </div>
+    <button class="btn btn-primary" onclick="window.location.href='form.html'">
+      + Tambah
+    </button>
+  </header>
 
-  <table border="1" width="100%" id="table">
-    <thead>
-      <tr>
-        <th>No</th>
-        <th>Judul</th>
-        <th>Isi</th>
-        <th>Aksi</th>
-      </tr>
-    </thead>
-    <tbody id="list"></tbody>
-  </table>
+  <main class="notes-board">
+    <div id="notes-list" class="notes-grid" aria-live="polite"></div>
+
+    <div id="empty-state" class="empty-state" hidden>
+      <div class="empty-icon">&#9825;</div>
+      <h2>Belum ada catatan</h2>
+      <p>Yuk tulis satu catatan kecil dulu.</p>
+      <button class="btn btn-primary" onclick="window.location.href='form.html'">
+        Tambah Note
+      </button>
+    </div>
+  </main>
+</div>
+
+<div class="modal" id="note-modal" aria-hidden="true">
+  <button class="modal-overlay" type="button" aria-label="Tutup detail catatan"></button>
+
+  <section class="modal-card" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <div class="modal-header">
+      <div>
+        <p class="modal-label">Detail Catatan</p>
+        <h2 id="modal-title"></h2>
+        <p id="modal-date" class="modal-date"></p>
+      </div>
+
+      <button class="icon-button" type="button" aria-label="Tutup" onclick="closeModal()">
+        x
+      </button>
+    </div>
+
+    <p id="modal-body" class="modal-body"></p>
+
+    <div class="modal-actions">
+      <button class="btn btn-soft" id="modal-edit-btn" type="button">Edit</button>
+      <button class="btn btn-danger" id="modal-delete-btn" type="button">Hapus</button>
+    </div>
+  </section>
 </div>
 
 <script>
+const API_URL = 'https://notes-finka-521926891872.us-central1.run.app/notes';
+let notes = [];
+
+const notesList = document.getElementById('notes-list');
+const noteCount = document.getElementById('note-count');
+const emptyState = document.getElementById('empty-state');
+const modal = document.getElementById('note-modal');
+const modalTitle = document.getElementById('modal-title');
+const modalDate = document.getElementById('modal-date');
+const modalBody = document.getElementById('modal-body');
+const modalEditBtn = document.getElementById('modal-edit-btn');
+const modalDeleteBtn = document.getElementById('modal-delete-btn');
+const modalOverlay = document.querySelector('.modal-overlay');
+
+function formatDate(value) {
+  if (!value) return 'Tanpa tanggal';
+
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return 'Tanpa tanggal';
+
+  return new Intl.DateTimeFormat('id-ID', {
+    dateStyle: 'medium',
+    timeStyle: 'short'
+  }).format(date);
+}
+
+function getNoteDate(note) {
+  return note.createdAt || note.updatedAt;
+}
+
+function getPreview(text, maxLength = 110) {
+  const cleanText = text || 'Tidak ada isi catatan.';
+
+  if (cleanText.length <= maxLength) {
+    return cleanText;
+  }
+
+  return `${cleanText.substring(0, maxLength).trim()}...`;
+}
+
+function createNoteCard(note) {
+  const card = document.createElement('article');
+  card.className = 'note-card';
+
+  const title = document.createElement('h2');
+  title.textContent = note.judul || 'Tanpa judul';
+
+  const date = document.createElement('p');
+  date.className = 'note-date';
+  date.textContent = formatDate(getNoteDate(note));
+
+  const body = document.createElement('p');
+  body.className = 'note-preview';
+  body.textContent = getPreview(note.isi);
+
+  const actions = document.createElement('div');
+  actions.className = 'note-actions';
+
+  const viewButton = document.createElement('button');
+  viewButton.className = 'btn btn-primary btn-full';
+  viewButton.type = 'button';
+  viewButton.textContent = 'View';
+  viewButton.addEventListener('click', () => openModal(note.id));
+
+  const actionRow = document.createElement('div');
+  actionRow.className = 'action-row';
+
+  const editButton = document.createElement('button');
+  editButton.className = 'btn btn-soft';
+  editButton.type = 'button';
+  editButton.textContent = 'Edit';
+  editButton.addEventListener('click', () => edit(note.id));
+
+  const deleteButton = document.createElement('button');
+  deleteButton.className = 'btn btn-danger';
+  deleteButton.type = 'button';
+  deleteButton.textContent = 'Hapus';
+  deleteButton.addEventListener('click', () => hapus(note.id));
+
+  actionRow.append(editButton, deleteButton);
+  actions.append(viewButton, actionRow);
+  card.append(title, date, body, actions);
+
+  return card;
+}
+
+function renderNotes(data) {
+  notesList.innerHTML = '';
+  noteCount.textContent = `${data.length} catatan`;
+
+  if (!Array.isArray(data) || data.length === 0) {
+    emptyState.hidden = false;
+    return;
+  }
+
+  emptyState.hidden = true;
+
+  data.forEach((note) => {
+    notesList.appendChild(createNoteCard(note));
+  });
+}
+
 async function getNotes() {
+  notesList.innerHTML = '<p class="loading">Memuat catatan...</p>';
+  emptyState.hidden = true;
+
   try {
-    const res = await fetch('https://notes-finka-521926891872.us-central1.run.app/notes');
-    const data = await res.json();
+    const res = await fetch(API_URL);
+    notes = await res.json();
 
-    const list = document.getElementById('list');
-    list.innerHTML = '';
-
-    // Cek apakah data benar-benar array dan tidak kosong
-    if (!Array.isArray(data) || data.length === 0) {
-      list.innerHTML = `
-        <tr>
-          <td colspan="4" style="text-align:center;">Belum ada catatan 😢</td>
-        </tr>
-      `;
-      return;
+    if (!Array.isArray(notes)) {
+      notes = [];
     }
 
-    data.forEach((note, index) => {
-      let isiPendek = note.isi || "";
-
-      if (isiPendek.length > 80) {
-        isiPendek = isiPendek.substring(0, 80) + "...";
-      }
-
-      list.innerHTML += `
-        <tr>
-          <td>${index + 1}</td>
-          <td>${note.judul}</td>
-          <td>${isiPendek}</td>
-          <td>
-            <button class="btn-edit" onclick="edit(${note.id})">✏️</button>
-            <button class="btn-delete" onclick="hapus(${note.id})">🗑️</button>
-          </td>
-        </tr>
-      `;
-    });
+    renderNotes(notes);
   } catch (error) {
-    console.error("Gagal mengambil data:", error);
-    document.getElementById('list').innerHTML = '<tr><td colspan="4">Gagal memuat data dari server.</td></tr>';
+    console.error('Gagal mengambil data:', error);
+    notesList.innerHTML = '<p class="loading error">Gagal memuat data dari server.</p>';
+    noteCount.textContent = '0 catatan';
   }
 }
 
+function openModal(id) {
+  const note = notes.find((item) => item.id === id);
+  if (!note) return;
+
+  modalTitle.textContent = note.judul || 'Tanpa judul';
+  modalDate.textContent = formatDate(getNoteDate(note));
+  modalBody.textContent = note.isi || 'Tidak ada isi catatan.';
+  modalEditBtn.onclick = () => edit(note.id);
+  modalDeleteBtn.onclick = () => hapus(note.id);
+
+  modal.classList.add('show');
+  modal.setAttribute('aria-hidden', 'false');
+}
+
+function closeModal() {
+  modal.classList.remove('show');
+  modal.setAttribute('aria-hidden', 'true');
+}
+
 async function hapus(id) {
-  if (confirm("Serius mau hapus catatan ini?")) {
-    await fetch(`https://notes-finka-521926891872.us-central1.run.app/notes/${id}`, {
+  if (confirm('Serius mau hapus catatan ini?')) {
+    await fetch(`${API_URL}/${id}`, {
       method: 'DELETE'
     });
+
+    closeModal();
     getNotes();
   }
 }
@@ -84,6 +216,13 @@ async function hapus(id) {
 function edit(id) {
   window.location.href = `form.html?id=${id}`;
 }
+
+modalOverlay.addEventListener('click', closeModal);
+document.addEventListener('keydown', (event) => {
+  if (event.key === 'Escape') {
+    closeModal();
+  }
+});
 
 getNotes();
 </script>

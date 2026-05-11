@@ -1,3 +1,16 @@
+# runtime: nodejs20
+# instance_class: F1
+
+# service: notes-finka
+
+# handlers:
+#   - url: /
+#     static_files: index.html
+#     upload: index.html
+#   - url: /(.*)
+#     static_files: \1
+#     upload: (.*)
+
 runtime: nodejs20
 instance_class: F1
 
@@ -7,8 +20,7 @@ handlers:
   - url: /
     static_files: index.html
     upload: index.html
+
   - url: /(.*)
     static_files: \1
-    upload: (.*)
-
-    
+    upload: .*
